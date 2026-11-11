@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HELLSING ORGANIZATION — World of Warcraft Autonomous Recruiter</title>
+  <meta name="description" content="Элитный комплекс автономного набора в подземелья Mythic+ и рейды World of Warcraft (Firestorm Midnight 12.0.7 & TWW). Zero-Taint OpenCV, аппаратный F12, виртуальные столы, P2P mesh.">
+  <link rel="icon" type="image/x-icon" href="daemon_icon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070406;
+      --bg-card: rgba(18, 10, 14, 0.85);
+      --bg-card-border: rgba(139, 0, 0, 0.35);
+      --bg-card-hover: rgba(28, 14, 20, 0.95);
+      --crimson-core: #8b0000;
+      --crimson-bright: #dc143c;
+      --crimson-glow: rgba(220, 20, 60, 0.45);
+      --gold-accent: #d4af37;
+      --gold-glow: rgba(212, 175, 55, 0.3);
+      --cyan-neon: #00e5ff;
+      --cyan-glow: rgba(0, 229, 255, 0.4);
+      --text-main: #f5e8e8;
+      --text-muted: #a38d92;
+      --font-header: 'Cinzel', serif;
+      --font-gothic: 'Cinzel Decorative', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Фоновый канвас с кровавыми искрами */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Верхняя панель навигации */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 4, 6, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(139, 0, 0, 0.4);
+      padding: 14px 0;
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--crimson-bright);
+      box-shadow: 0 0 15px var(--crimson-glow);
+    }
+
+    .brand-title {
+      font-family: var(--font-gothic);
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(220, 20, 60, 0.6);
+    }
+
+    .brand-sub {
+      display: block;
+      font-family: var(--font-header);
+      font-size: 0.68rem;
+      letter-spacing: 3px;
+      color: var(--gold-accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-header);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+      text-shadow: 0 0 8px var(--crimson-bright);
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(40, 10, 15, 0.8));
+      border: 1px solid var(--crimson-bright);
+      border-radius: 6px;
+      color: #fff;
+      font-family: var(--font-header);
+      font-size: 0.85rem;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 0 12px rgba(220, 20, 60, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-github:hover {
+      background: linear-gradient(135deg, var(--crimson-core), var(--crimson-bright));
+      box-shadow: 0 0 20px rgba(220, 20, 60, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* Дисклеймер / Предупреждение */
+    .disclaimer-banner {
+      margin-top: 24px;
+      background: linear-gradient(135deg, rgba(80, 5, 10, 0.85), rgba(30, 4, 8, 0.95));
+      border: 1px solid var(--crimson-bright);
+      border-left: 6px solid var(--crimson-bright);
+      border-radius: 8px;
+      padding: 18px 24px;
+      box-shadow: 0 0 25px rgba(220, 20, 60, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .disclaimer-icon {
+      font-size: 2rem;
+      color: var(--crimson-bright);
+      flex-shrink: 0;
+    }
+
+    .disclaimer-text h4 {
+      font-family: var(--font-header);
+      font-size: 1.05rem;
+      color: #ff9999;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .disclaimer-text p {
+      font-size: 0.88rem;
+      color: #e0d0d0;
+      line-height: 1.45;
+    }
+
+    .disclaimer-text strong {
+      color: #fff;
+    }
+
+    /* Главный экран (Hero) */
+    .hero {
+      padding: 50px 0 70px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-banner-container {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(220, 20, 60, 0.4);
+      box-shadow: 0 0 40px rgba(139, 0, 0, 0.5);
+      margin-bottom: 40px;
+      background: #000;
+    }
+
+    .hero-banner-img {
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: cover;
+      display: block;
+      filter: contrast(108%) saturate(110%);
+    }
+
+    .hero-banner-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(7, 4, 6, 0.95) 15%, rgba(7, 4, 6, 0.5) 60%, transparent 100%);
+      padding: 40px 30px 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .animated-seal-center {
+      width: 90px;
+      height: 90px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 15px var(--crimson-bright));
+    }
+
+    .hero-title {
+      font-family: var(--font-gothic);
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(220, 20, 60, 0.9), 0 0 40px rgba(139, 0, 0, 0.7);
+      margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-header);
+      font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+      color: var(--gold-accent);
+      letter-spacing: 2px;
+      max-width: 850px;
+      margin: 0 auto 28px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 35px;
+    }
+
+    .badge-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(25, 10, 16, 0.85);
+      border: 1px solid rgba(139, 0, 0, 0.5);
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-family: var(--font-header);
+      letter-spacing: 1px;
+      color: #f0e0e0;
+      box-shadow: 0 0 10px rgba(139, 0, 0, 0.2);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--crimson-bright);
+      box-shadow: 0 0 8px var(--crimson-bright);
+    }
+
+    .badge-cyan .badge-dot {
+      background: var(--cyan-neon);
+      box-shadow: 0 0 8px var(--cyan-neon);
+    }
+
+    .badge-gold .badge-dot {
+      background: var(--gold-accent);
+      box-shadow: 0 0 8px var(--gold-accent);
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 36px;
+      border-radius: 8px;
+      font-family: var(--font-header);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #a00000, #dc143c);
+      color: #fff;
+      border: 1px solid #ff4d6d;
+      box-shadow: 0 0 25px rgba(220, 20, 60, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #c00000, #ff1a4a);
+      box-shadow: 0 0 35px rgba(220, 20, 60, 0.9), inset 0 0 20px rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(20, 10, 15, 0.85);
+      color: #fff;
+      border: 1px solid rgba(220, 20, 60, 0.5);
+      box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(40, 15, 22, 0.95);
+      border-color: var(--crimson-bright);
+      box-shadow: 0 0 25px rgba(220, 20, 60, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Секции */
+    section {
+      padding: 60px 0;
+      border-top: 1px solid rgba(139, 0, 0, 0.25);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .section-title {
+      font-family: var(--font-gothic);
+      font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+      margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+      font-family: var(--font-header);
+      font-size: 0.95rem;
+      color: var(--gold-accent);
+      letter-spacing: 2px;
+    }
+
+    /* Сетка фич */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 28px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 12px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      transition: all 0.35s ease;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--crimson-bright), transparent);
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(220, 20, 60, 0.7);
+      box-shadow: 0 12px 40px rgba(139, 0, 0, 0.35);
+      transform: translateY(-4px);
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-icon-wrapper {
+      width: 58px;
+      height: 58px;
+      border-radius: 10px;
+      background: rgba(139, 0, 0, 0.25);
+      border: 1px solid rgba(220, 20, 60, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+    }
+
+    .feature-title {
+      font-family: var(--font-header);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .feature-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .feature-metric {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--cyan-neon);
+      background: rgba(0, 229, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 229, 255, 0.25);
+    }
+
+    /* Галерея арта */
+    .gallery-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 30px;
+    }
+
+    .gallery-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(139, 0, 0, 0.4);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .gallery-card:hover {
+      border-color: var(--crimson-bright);
+      box-shadow: 0 12px 45px rgba(220, 20, 60, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .gallery-img {
+      width: 100%;
+      height: 290px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .gallery-card:hover .gallery-img {
+      transform: scale(1.03);
+    }
+
+    .gallery-content {
+      padding: 22px 24px;
+    }
+
+    .gallery-card-title {
+      font-family: var(--font-header);
+      font-size: 1.15rem;
+      color: #fff;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .gallery-card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Сетка гербов классов */
+    .crests-container {
+      background: rgba(14, 8, 12, 0.85);
+      border: 1px solid rgba(139, 0, 0, 0.4);
+      border-radius: 14px;
+      padding: 35px 25px;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+    }
+
+    .crests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 16px;
+      justify-items: center;
+    }
+
+    .crest-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 6px;
+      border-radius: 8px;
+      background: rgba(25, 12, 18, 0.6);
+      border: 1px solid rgba(139, 0, 0, 0.3);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .crest-item:hover {
+      background: rgba(45, 15, 25, 0.9);
+      border-color: var(--crimson-bright);
+      box-shadow: 0 0 15px var(--crimson-glow);
+      transform: translateY(-3px);
+    }
+
+    .crest-item img {
+      width: 48px;
+      height: 48px;
+      filter: drop-shadow(0 0 5px rgba(220, 20, 60, 0.4));
+    }
+
+    .crest-name {
+      font-family: var(--font-header);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #d0c0c0;
+      letter-spacing: 0.5px;
+    }
+
+    /* Горячие клавиши */
+    .hotkeys-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg-card);
+      border: 1px solid rgba(139, 0, 0, 0.4);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+    }
+
+    .hotkeys-table th {
+      background: rgba(25, 10, 16, 0.95);
+      color: var(--gold-accent);
+      font-family: var(--font-header);
+      font-size: 0.88rem;
+      letter-spacing: 1.5px;
+      padding: 16px 22px;
+      text-align: left;
+      border-bottom: 1px solid rgba(139, 0, 0, 0.4);
+    }
+
+    .hotkeys-table td {
+      padding: 15px 22px;
+      border-bottom: 1px solid rgba(139, 0, 0, 0.15);
+      color: #e5d8d8;
+      font-size: 0.9rem;
+    }
+
+    .hotkeys-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .hotkeys-table tr:hover td {
+      background: rgba(35, 15, 22, 0.6);
+    }
+
+    .key-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #18080f;
+      border: 1px solid var(--crimson-bright);
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #ff8099;
+      box-shadow: 0 0 8px rgba(220, 20, 60, 0.3);
+    }
+
+    /* Блок кода / терминал */
+    .terminal-box {
+      background: #0d060a;
+      border: 1px solid rgba(139, 0, 0, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      margin-top: 25px;
+    }
+
+    .terminal-header {
+      background: #180a12;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(139, 0, 0, 0.3);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ff4d4d; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .terminal-code {
+      padding: 22px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      line-height: 1.7;
+      color: #e0d0d0;
+      overflow-x: auto;
+    }
+
+    .terminal-code .cmd {
+      color: var(--cyan-neon);
+    }
+
+    .terminal-code .comment {
+      color: #857075;
+      font-style: italic;
+    }
+
+    /* Футер */
+    footer {
+      border-top: 1px solid rgba(139, 0, 0, 0.4);
+      background: #050304;
+      padding: 50px 0 35px;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    .footer-quote {
+      font-family: var(--font-header);
+      font-style: italic;
+      color: var(--gold-accent);
+      font-size: 1.05rem;
+      max-width: 650px;
+      margin: 0 auto 16px;
+      letter-spacing: 1px;
+    }
+
+    .footer-author {
+      font-family: var(--font-gothic);
+      font-size: 0.85rem;
+      color: var(--crimson-bright);
+      letter-spacing: 2px;
+      margin-bottom: 25px;
+    }
+
+    .footer-copy {
+      color: #705e63;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-copy a {
+      color: #a88b92;
+      text-decoration: none;
+    }
+
+    .footer-copy a:hover {
+      color: var(--crimson-bright);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .gallery-showcase { grid-template-columns: 1fr; }
+      .hero-cta { flex-direction: column; }
+      .btn-cta { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Анимированный канвас кровавых искр -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Навигация -->
+  <nav>
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <img src="alucard_animated_seal.gif" alt="Hellsing Seal">
+        <div>
+          <span class="brand-title">HELLSING</span>
+          <span class="brand-sub">AUTONOMOUS RECRUITER</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Возможности</a></li>
+        <li><a href="#gallery">Галерея</a></li>
+        <li><a href="#crests">Классы</a></li>
+        <li><a href="#hotkeys">Горячие клавиши</a></li>
+        <li><a href="#build">Сборка</a></li>
+      </ul>
+      <a href="https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter" target="_blank" class="btn-github">
+        <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub v1.0.0
+      </a>
+    </div>
+  </nav>
+
+  <div class="wrapper">
+
+    <!-- Официальное предупреждение / Серверный дисклеймер -->
+    <div class="disclaimer-banner">
+      <div class="disclaimer-icon">⚠️</div>
+      <div class="disclaimer-text">
+        <h4>ВАЖНОЕ ПРЕДУПРЕЖДЕНИЕ: СЕРВЕРНАЯ СОВМЕСТИМОСТЬ</h4>
+        <p>Комплекс протестирован <strong>ИСКЛЮЧИТЕЛЬНО на пиратском сервере Firestorm (WoW Midnight 12.0.7 &amp; The War Within)</strong>. На официальных серверах (Blizzard Retail / Офф) <strong>ВОЗМОЖНЫ БЛОКИРОВКИ АККАУНТА (БАНЫ)</strong>! Использование на официальных серверах Blizzard строго на ваш страх и риск.</p>
+      </div>
+    </div>
+
+    <!-- Главный экран -->
+    <header class="hero">
+      <div class="hero-banner-container">
+        <img src="media/banner_hellsing_alucard.jpg" alt="Alucard Hellsing Banner" class="hero-banner-img">
+        <div class="hero-banner-overlay">
+          <img src="alucard_animated_seal.gif" alt="Cromwell Seal" class="animated-seal-center">
+          <h1 class="hero-title">HELLSING ORGANIZATION</h1>
+          <p class="hero-subtitle">WORLD OF WARCRAFT AUTONOMOUS RECRUITER &bull; MIDNIGHT 12.0.7</p>
+
+          <div class="hero-badges">
+            <span class="badge-item"><span class="badge-dot"></span> Firestorm Midnight 12.0.7</span>
+            <span class="badge-item badge-cyan"><span class="badge-dot"></span> Zero-Taint OpenCV 100%</span>
+            <span class="badge-item"><span class="badge-dot"></span> Pure Hardware F12 (No Mouse)</span>
+            <span class="badge-item badge-gold"><span class="badge-dot"></span> Virtual Desktop Sandbox</span>
+            <span class="badge-item"><span class="badge-dot"></span> P2P Mesh Network</span>
+          </div>
+
+          <div class="hero-cta">
+            <a href="https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter/releases/download/v1.0.0/HELLSING_Recruiter_Setup.exe" class="btn-cta btn-primary">
+              📥 Скачать Инсталлятор (112 МБ)
+            </a>
+            <a href="https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter/releases/download/v1.0.0/WoWSmartRecruiter.exe" class="btn-cta btn-secondary">
+              ⚙️ Скачать Демон (64 МБ)
+            </a>
+            <a href="#build" class="btn-cta btn-secondary">
+              🛠️ Ручная сборка
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Секция: Возможности -->
+    <section id="features">
+      <div class="section-header">
+        <h2 class="section-title">АРХИТЕКТУРА И ТЕХНОЛОГИИ</h2>
+        <p class="section-subtitle">БЕСКОМПРОМИССНАЯ БЕЗОПАСНОСТЬ И МАКСИМАЛЬНАЯ СКОРОСТЬ</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">👁️</div>
+          <h3 class="feature-title">Zero-Taint Optical Bridge</h3>
+          <p class="feature-desc">0% модификаций памяти игры и отсутствие хуков DLL. Клиент WoW проецирует субпиксельный цветовой код (24×24 px), а алгоритм OpenCV Template Matching мгновенно считывает решение из DirectX-буфера.</p>
+          <span class="feature-metric">Точность: 100% | Время: &lt; 15 мс</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">⌨️</div>
+          <h3 class="feature-title">Pure Hardware F12 Input</h3>
+          <p class="feature-desc">Клик мыши отключен на 100%. Курсор игрока полностью свободен. Двойной ввод клавиши F12 через Win32 PostMessage в дескриптор окна и аппаратный SendInput через синхронизацию AttachThreadInput.</p>
+          <span class="feature-metric">0 мискликов | Фон без перехвата мыши</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🖥️</div>
+          <h3 class="feature-title">Virtual Desktop Isolation</h3>
+          <p class="feature-desc">Окно WoW переносится на скрытый виртуальный рабочий стол Windows (Стол #2). Вы можете работать, играть в другие игры или смотреть 4K фильмы на Столе #1 — рекрутер непрерывно отбирает кандидатов в фоне.</p>
+          <span class="feature-metric">Изоляция PyVDA | 0 помех работе</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🕸️</div>
+          <h3 class="feature-title">Децентрализованный P2P Mesh</h3>
+          <p class="feature-desc">Аддон KAR_P2P_Tester объединяет всех членов группы в P2P-сеть через защищенный аддон-канал C_ChatInfo. База черного списка и история кандидатов синхронизируются без сторонних веб-серверов.</p>
+          <span class="feature-metric">Zero Server Dependency | 100% P2P</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🩸</div>
+          <h3 class="feature-title">Dark Gothic Web Dashboard</h3>
+          <p class="feature-desc">Локальный REST API микросервис (порт 49286) и стилизованный дашборд в эстетике Hellsing. Интерактивная статистика, живая телеметрия OpenCV, Cinzel-шрифты и анимированная печать Кромвеля.</p>
+          <span class="feature-metric">Standalone Chromium App | Порт 49286</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">🛡️</div>
+          <h3 class="feature-title">Многофакторный скоринг</h3>
+          <p class="feature-desc">Глубокая эвристическая оценка кандидатов в реальном времени: проверка минимального ilvl, рейтинга Mythic+ (Raider.IO), распределения ролей (1 танк, 1 хил, 3 ДД) и автоматический отсев вагонов.</p>
+          <span class="feature-metric">Точный отсев слакеров | Авто-прием</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Секция: Галерея -->
+    <section id="gallery">
+      <div class="section-header">
+        <h2 class="section-title">ВИЗУАЛЬНЫЙ АРХИВ HELLSING</h2>
+        <p class="section-subtitle">БОЕВОЙ СКАНЕР В ИГРЕ И КОМАНДНЫЙ ЦЕНТР ОРГАНИЗАЦИИ</p>
+      </div>
+
+      <div class="gallery-showcase">
+        <div class="gallery-card">
+          <img src="media/wow_midnight_ingame_scanner.jpg" alt="In-game Midnight Scanner" class="gallery-img">
+          <div class="gallery-content">
+            <h3 class="gallery-card-title">Боевой сканер в WoW Midnight 12.0.7</h3>
+            <p class="gallery-card-desc">Реальная работа оптического моста в клиенте Firestorm. Сигнал мгновенного отклонения кандидата Camiw с ilvl 289 &lt; 325 (желтый сенсор в верхнем левом углу 0,0).</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <img src="media/hellsing_wow_war_room.jpg" alt="Hellsing Command War Room" class="gallery-img">
+          <div class="gallery-content">
+            <h3 class="gallery-card-title">Командный тактический зал HELLSING</h3>
+            <p class="gallery-card-desc">Алукард и Виктория Серас за голографической консолью мониторинга очередей LFG, отслеживания телеметрии OpenCV и фильтрации рейдовых заявок.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <img src="media/alucard_level_zero_baskerville.jpg" alt="Restriction Level 0 Baskerville" class="gallery-img">
+          <div class="gallery-content">
+            <h3 class="gallery-card-title">Restriction Control Art Level 0</h3>
+            <p class="gallery-card-desc">Высвобождение демонической гончей Баскервилей: мгновенный сброс нежелательных заявок и полная защита от забивания очереди бесполезными кандидатами.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <img src="media/banner_hellsing_alucard.jpg" alt="Hellsing Cathedral" class="gallery-img">
+          <div class="gallery-content">
+            <h3 class="gallery-card-title">Готический кафедральный собор</h3>
+            <p class="gallery-card-desc">Алукард под кровавой луной с сияющей пентаграммой Кромвеля. Архитектурная основа фирменного стиля и визуальной идентичности комплекса.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Секция: Классы -->
+    <section id="crests">
+      <div class="section-header">
+        <h2 class="section-title">ГОТИЧЕСКИЕ ГЕРБЫ КЛАССОВ</h2>
+        <p class="section-subtitle">ЭКСКЛЮЗИВНЫЕ ЭМБЛЕМЫ ВСЕХ 13 КЛАССОВ WORLD OF WARCRAFT</p>
+      </div>
+
+      <div class="crests-container">
+        <div class="crests-grid">
+          <div class="crest-item"><img src="media/crest_deathknight.png" alt="DK"><span class="crest-name">DK</span></div>
+          <div class="crest-item"><img src="media/crest_demonhunter.png" alt="DH"><span class="crest-name">DH</span></div>
+          <div class="crest-item"><img src="media/crest_druid.png" alt="Druid"><span class="crest-name">Druid</span></div>
+          <div class="crest-item"><img src="media/crest_evoker.png" alt="Evoker"><span class="crest-name">Evoker</span></div>
+          <div class="crest-item"><img src="media/crest_hunter.png" alt="Hunter"><span class="crest-name">Hunter</span></div>
+          <div class="crest-item"><img src="media/crest_mage.png" alt="Mage"><span class="crest-name">Mage</span></div>
+          <div class="crest-item"><img src="media/crest_monk.png" alt="Monk"><span class="crest-name">Monk</span></div>
+          <div class="crest-item"><img src="media/crest_paladin.png" alt="Paladin"><span class="crest-name">Paladin</span></div>
+          <div class="crest-item"><img src="media/crest_priest.png" alt="Priest"><span class="crest-name">Priest</span></div>
+          <div class="crest-item"><img src="media/crest_rogue.png" alt="Rogue"><span class="crest-name">Rogue</span></div>
+          <div class="crest-item"><img src="media/crest_shaman.png" alt="Shaman"><span class="crest-name">Shaman</span></div>
+          <div class="crest-item"><img src="media/crest_warlock.png" alt="Warlock"><span class="crest-name">Warlock</span></div>
+          <div class="crest-item"><img src="media/crest_warrior.png" alt="Warrior"><span class="crest-name">Warrior</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Секция: Горячие клавиши -->
+    <section id="hotkeys">
+      <div class="section-header">
+        <h2 class="section-title">ГОРЯЧИЕ КЛАВИШИ УПРАВЛЕНИЯ</h2>
+        <p class="section-subtitle">МГНОВЕННЫЙ КОНТРОЛЬ ДЕМОНА ИЗ ЛЮБОГО ОКНА WINDOWS</p>
+      </div>
+
+      <table class="hotkeys-table">
+        <thead>
+          <tr>
+            <th>Клавиша</th>
+            <th>Действие</th>
+            <th>Описание работы</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="key-badge">NumPad 1</span></td>
+            <td><strong>Авто-набор (Старт / Пауза)</strong></td>
+            <td>Включает и выключает оптическое сканирование OpenCV и отправку клавиши F12.</td>
+          </tr>
+          <tr>
+            <td><span class="key-badge">NumPad 5</span></td>
+            <td><strong>Дашборд HELLSING</strong></td>
+            <td>Открывает локальный графический интерфейс управления в автономном режиме Chromium.</td>
+          </tr>
+          <tr>
+            <td><span class="key-badge">NumPad 8</span></td>
+            <td><strong>Скрыть на Стол #2</strong></td>
+            <td>Мгновенно изолирует окно WoW на фоновый виртуальный рабочий стол Windows.</td>
+          </tr>
+          <tr>
+            <td><span class="key-badge">NumPad 9</span></td>
+            <td><strong>Вернуть окно WoW</strong></td>
+            <td>Возвращает свернутое или изолированное окно игры обратно на текущий экран.</td>
+          </tr>
+          <tr>
+            <td><span class="key-badge">F11</span></td>
+            <td><strong>Калибровка сенсора</strong></td>
+            <td>Запускает тестовую вспышку чистого белого квадрата для автокалибровки OpenCV.</td>
+          </tr>
+          <tr>
+            <td><span class="key-badge">F12</span></td>
+            <td><strong>Аппаратный триггер</strong></td>
+            <td>Зарезервированная клавиша выполнения макроса /click secureEventFrame.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Секция: Сборка -->
+    <section id="build">
+      <div class="section-header">
+        <h2 class="section-title">ИНСТРУКЦИЯ ПО РУЧНОЙ СБОРКЕ</h2>
+        <p class="section-subtitle">КАК СКОМПИЛИРОВАТЬ ИСХОДНИКИ В АВТОНОМНЫЕ EXE-БИНАРНИКИ</p>
+      </div>
+
+      <div class="terminal-box">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <div class="terminal-dot dot-red"></div>
+            <div class="terminal-dot dot-yellow"></div>
+            <div class="terminal-dot dot-green"></div>
+          </div>
+          <div class="terminal-title">cmd.exe &mdash; HELLSING Build Pipeline</div>
+        </div>
+        <div class="terminal-code">
+<span class="comment">:: 1. Клонирование репозитория и переход в папку</span>
+<span class="cmd">git clone https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter.git</span>
+<span class="cmd">cd Hellsing-WoW-Recruiter</span>
+
+<span class="comment">:: 2. Установка зависимостей (OpenCV, PyWin32, PyVDA, PyInstaller)</span>
+<span class="cmd">scripts\install_dependencies.bat</span>
+
+<span class="comment">:: 3. Проверка синтаксиса аддона (0 ошибок)</span>
+<span class="cmd">python check_lua_syntax.py "AddOns\KeyAutoRecruit\KeyAutoRecruit.lua"</span>
+
+<span class="comment">:: 4. Компиляция фонового демона WoWSmartRecruiter.exe (без Tkinter)</span>
+<span class="cmd">python -m PyInstaller --clean -y WoWSmartRecruiter.spec</span>
+<span class="cmd">copy /y dist\WoWSmartRecruiter.exe .</span>
+
+<span class="comment">:: 5. Компиляция монолитного инсталлятора HELLSING_Recruiter_Setup.exe</span>
+<span class="cmd">python -m PyInstaller --clean -y HELLSING_Recruiter_Setup.spec</span>
+
+<span class="comment">:: [ГОТОВО] Все бинарники собраны в папке dist\</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Футер -->
+  <footer>
+    <p class="footer-quote">&ldquo;The bird of Hermes is my name, eating my feathers to make me tame.&rdquo;</p>
+    <p class="footer-author">&mdash; ALUCARD &bull; ROYAL ORDER OF PROTESTANT KNIGHTS</p>
+    <p class="footer-copy">
+      Распространяется под свободной лицензией <a href="https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter/blob/main/LICENSE" target="_blank">MIT License</a> &bull; 
+      Автор: <strong>Alucard Blackwell</strong> (<a href="https://github.com/arenamcru-dotcom" target="_blank">@arenamcru-dotcom</a>) &bull; 2026
+    </p>
+  </footer>
+
+  <!-- Скрипт канваса частиц -->
+  <script>
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = 45;
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2.2 + 0.6,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -Math.random() * 0.8 - 0.2,
+        alpha: Math.random() * 0.6 + 0.2,
+        color: Math.random() > 0.3 ? '220, 20, 60' : '212, 175, 55'
+      });
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+
+      for (let p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.y < 0) {
+          p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = `rgba(${p.color}, 0.8)`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    render();
+  </script>
+</body>
+</html>
