@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter/releases"><img src="https://img.shields.io/badge/Release-v1.0.0_Midnight-8b0000.svg?style=for-the-badge&logo=github&logoColor=white" alt="Release v1.0.0"></a>
+  <a href="https://github.com/alucard5552/Hellsing-WoW-Recruiter/releases"><img src="https://img.shields.io/badge/Release-v1.0.0_Midnight-8b0000.svg?style=for-the-badge&logo=github&logoColor=white" alt="Release v1.0.0"></a>
   <img src="https://img.shields.io/badge/WoW_Target-12.0.7_Midnight_%26_TWW-dc143c.svg?style=for-the-badge&logo=battlenet&logoColor=white" alt="WoW Target">
   <img src="https://img.shields.io/badge/Security-Zero_Taint_OpenCV-000000.svg?style=for-the-badge&logo=shield&logoColor=red" alt="Zero-Taint">
   <img src="https://img.shields.io/badge/Input-Pure_Hardware_F12-800020.svg?style=for-the-badge&logo=windows&logoColor=white" alt="Pure Hardware F12">
@@ -129,7 +129,7 @@ flowchart TD
 
 ### 2. Клонирование репозитория
 ```cmd
-git clone https://github.com/arenamcru-dotcom/Hellsing-WoW-Recruiter.git
+git clone https://github.com/alucard5552/Hellsing-WoW-Recruiter.git
 cd Hellsing-WoW-Recruiter
 ```
 
@@ -212,4 +212,4 @@ python -m PyInstaller --clean -y HELLSING_Recruiter_Setup.spec
 ## ⚖️ Лицензия (License)
 
 Проект распространяется под открытой лицензией [MIT License](LICENSE).  
-Copyright (c) 2026 HELLSING Organization / Alucard Blackwell (`arenamcru-dotcom`).
+Copyright (c) 2026 HELLSING Organization / Alucard Blackwell (`alucard5552`).
