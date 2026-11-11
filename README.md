@@ -1,6 +1,24 @@
 # 🩸 HELLSING ORGANIZATION — World of Warcraft Autonomous Recruiter
 
 <p align="center">
+  <a href="https://drive.google.com/open?id=1ikS7HS-iWfV-dWAJLUCNg8LPDV8_zdEt&usp=drive_fs" target="_blank">
+    <img src="https://img.shields.io/badge/📥_СКАЧАТЬ_ИНСТАЛЛЯТОР_(112_МБ)-GOOGLE_DRIVE-dc143c?style=for-the-badge&logo=google-drive&logoColor=white" height="42">
+  </a>
+  <a href="https://github.com/alucard5552/Hellsing-WoW-Recruiter" target="_blank">
+    <img src="https://img.shields.io/badge/⚔️_ОБЫЧНЫЙ_GITHUB-РЕПОЗИТОРИЙ-181717?style=for-the-badge&logo=github&logoColor=white" height="42">
+  </a>
+  <a href="https://alucard5552.github.io/Hellsing-WoW-Recruiter/" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_САЙТ--ВИЗИТКА-ONLINE-8b0000?style=for-the-badge&logo=google-chrome&logoColor=white" height="42">
+  </a>
+</p>
+
+<p align="center">
+  👉 <b><a href="https://drive.google.com/open?id=1ikS7HS-iWfV-dWAJLUCNg8LPDV8_zdEt&usp=drive_fs">📥 [ СКАЧАТЬ ИНСТАЛЛЯТОР В 1 КЛИК С GOOGLE ДИСКА (112 МБ) ]</a></b> &nbsp;|&nbsp;
+  <b><a href="https://github.com/alucard5552/Hellsing-WoW-Recruiter">📂 [ GitHub Репозиторий ]</a></b> &nbsp;|&nbsp;
+  <b><a href="https://alucard5552.github.io/Hellsing-WoW-Recruiter/">🌐 [ Сайт-Визитка ]</a></b>
+</p>
+
+<p align="center">
   <img src="media/banner_hellsing_alucard.jpg" alt="HELLSING WoW Autonomous Recruiter Banner" width="100%">
 </p>
 
