@@ -15,6 +15,14 @@
 
 ---
 
+> [!WARNING]
+> ### ⚠️ ВНИМАНИЕ: СЕРВЕРНАЯ СОВМЕСТИМОСТЬ И РИСК БЛОКИРОВКИ
+> **Протестировано ИСКЛЮЧИТЕЛЬНО на пиратском сервере Firestorm (WoW Midnight 12.0.7 / The War Within)!**  
+> **На официальных серверах (Blizzard Retail / Офф) ВОЗМОЖНЫ БЛОКИРОВКИ АККАУНТА (БАНЫ)!**  
+> Проект разрабатывался под архитектуру Firestorm. Любое использование на официальных серверах Blizzard строго не рекомендуется и осуществляется исключительно на ваш собственный страх и риск.
+
+---
+
 > *"The bird of Hermes is my name, eating my feathers to make me tame."*  
 > — **Alucard**, Royal Order of Protestant Knights (HELLSING Organization)
 
