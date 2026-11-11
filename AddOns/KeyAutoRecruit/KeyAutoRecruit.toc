@@ -1,0 +1,9 @@
+## Interface: 120001, 120007, 120000, 120100, 110205, 110000, 110200, 120105
+## Title: |cff00ff00KeyAutoRecruit|r (M+ Auto Recruiter)
+## Notes: Авто-набор в Mythic+ со встроенным защищенным аппаратным триггером и контролем спеков
+## Author: Antigravity & User
+## Version: 2.1.0
+## SavedVariables: KeyAutoRecruitDB
+
+KeyAutoRecruit.lua
+KeyAutoRecruit_GUI.lua

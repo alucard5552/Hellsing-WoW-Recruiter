@@ -1,0 +1,8 @@
+## Interface: 110205, 110000, 110200, 120105
+## Title: |cff00ccffKeyGroupDumper|r (LFG 2+ Applicant Sniffer)
+## Notes: Автономный дампер и сниффер групповых заявок (от 2 человек) в Mythic+
+## Author: Antigravity & User
+## Version: 1.0.0
+## SavedVariables: KeyGroupDumperDB
+
+KeyGroupDumper.lua

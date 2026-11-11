@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HELLSING • Mythic+ Tactical Recruiter Service</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+  :root {
+    --bg-void: #060508;
+    --bg-card: rgba(15, 10, 18, 0.85);
+    --bg-card-inner: rgba(24, 15, 28, 0.78);
+    --crimson-blood: #c41e3a;
+    --crimson-bright: #ff003c;
+    --crimson-dark: #660018;
+    --crimson-neon: #ff1a53;
+    --gold-bright: #fcf6ba;
+    --gold-main: #d4af37;
+    --gold-dark: #8a6c1e;
+    --silver-glow: #e2e8f0;
+    --font-gothic: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+    --font-heading: 'Cinzel', Georgia, serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body {
+    background-color: var(--bg-void);
+    color: #e0d8d8;
+    font-family: var(--font-ui);
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: overlay;
+    position: relative;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(8, 4, 10, 0.9);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--gold-dark), var(--crimson-blood), var(--gold-dark));
+    border-radius: 3px;
+  }
+
+  /* Dynamic Canvas Background (Rising Embers & Blood Mist) */
+  #particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Vignette & Radial Blood Ambient */
+  .vignette-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 50% 12%, rgba(220, 0, 50, 0.18) 0%, transparent 60%),
+      radial-gradient(circle at 50% 90%, rgba(140, 0, 30, 0.14) 0%, transparent 55%),
+      linear-gradient(180deg, rgba(6,5,8,0.2) 0%, rgba(6,5,8,0.92) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* App Shell Container */
+  .app-container {
+    position: relative;
+    z-index: 2;
+    padding: 16px 20px 24px 20px;
+    max-width: 530px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  /* -------------------------------------------------------------
+     HEADER & PENTAGRAM SEAL
+     ------------------------------------------------------------- */
+  .header-card {
+    background: linear-gradient(180deg, rgba(32, 16, 26, 0.9) 0%, rgba(16, 8, 16, 0.96) 100%);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 16px 18px;
+    position: relative;
+    box-shadow: 
+      0 0 30px rgba(196, 30, 58, 0.3),
+      inset 0 0 25px rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  .header-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-bright), var(--crimson-bright), transparent);
+    animation: goldSweep 4.5s infinite linear;
+  }
+
+  @keyframes goldSweep {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(50%); }
+  }
+
+  /* Rotating Seal of Cromwell */
+  .seal-wrapper {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+  }
+
+  .seal-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 12px rgba(255, 0, 60, 0.7));
+    animation: rotateSeal 35s infinite linear;
+    transform-origin: center center;
+  }
+
+  @keyframes rotateSeal {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .seal-glow-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 0 22px rgba(255, 0, 60, 0.5);
+    animation: sealGlow 2.8s infinite ease-in-out;
+  }
+
+  @keyframes sealGlow {
+    0%, 100% { opacity: 0.35; transform: scale(0.95); }
+    50% { opacity: 0.9; transform: scale(1.1); }
+  }
+
+  .header-info {
+    flex-grow: 1;
+  }
+
+  .header-title {
+    font-family: var(--font-gothic);
+    font-size: 19px;
+    letter-spacing: 2.2px;
+    background: linear-gradient(135deg, #fff7d6 0%, var(--gold-bright) 35%, var(--gold-main) 70%, var(--gold-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
+    line-height: 1.2;
+    position: relative;
+  }
+
+  .header-sub {
+    font-family: var(--font-heading);
+    font-size: 9px;
+    color: #ad9e92;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .header-hotkeys {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill-key {
+    background: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    color: var(--gold-bright);
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.9);
+    transition: all 0.2s ease;
+  }
+  .pill-key:hover {
+    border-color: var(--crimson-bright);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(255, 0, 60, 0.4);
+  }
+
+  /* Sound Toggle in Header */
+  .sound-btn {
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid var(--gold-dark);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gold-bright);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .sound-btn:hover {
+    border-color: var(--crimson-bright);
+    box-shadow: 0 0 12px var(--crimson-bright);
+    transform: scale(1.12);
+  }
+
+  /* -------------------------------------------------------------
+     CARD WRAPPER STYLES
+     ------------------------------------------------------------- */
+  .hellsing-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+    position: relative;
+    box-shadow: 
+      0 6px 24px rgba(0, 0, 0, 0.75),
+      inset 0 0 18px rgba(12, 6, 14, 0.7);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hellsing-card:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.85),
+      0 0 15px rgba(196, 30, 58, 0.15),
+      inset 0 0 20px rgba(16, 8, 20, 0.8);
+  }
+
+  /* Ornate Corner Brackets */
+  .hellsing-card::before, .hellsing-card::after {
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-color: var(--gold-bright);
+    pointer-events: none;
+    transition: transform 0.25s ease;
+  }
+  .hellsing-card::before {
+    top: 3px;
+    left: 3px;
+    border-top: 2px solid var(--gold-main);
+    border-left: 2px solid var(--gold-main);
+  }
+  .hellsing-card::after {
+    bottom: 3px;
+    right: 3px;
+    border-bottom: 2px solid var(--gold-main);
+    border-right: 2px solid var(--gold-main);
+  }
+  .hellsing-card:hover::before {
+    transform: translate(-1px, -1px);
+  }
+  .hellsing-card:hover::after {
+    transform: translate(1px, 1px);
+  }
+
+  .card-label {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+  }
+
+  .card-label svg {
+    fill: var(--gold-main);
+    filter: drop-shadow(0 0 4px var(--gold-main));
+  }
+
+  /* -------------------------------------------------------------
+     SECTION 1: STATUS & MASTER SWITCH
+     ------------------------------------------------------------- */
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .status-main-box {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .vampire-heart {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff0044 15%, var(--crimson-bright) 40%, var(--crimson-dark) 85%);
+    box-shadow: 0 0 18px var(--crimson-bright);
+    animation: heartPulse 1.6s infinite ease-in-out;
+    flex-shrink: 0;
+  }
+
+  .vampire-heart.paused {
+    background: radial-gradient(circle, #606270 20%, #202228 80%);
+    box-shadow: 0 0 8px rgba(100, 100, 120, 0.4);
+    animation: none;
+  }
+
+  @keyframes heartPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px var(--crimson-bright)); }
+    30% { transform: scale(1.18); filter: drop-shadow(0 0 24px var(--crimson-bright)); }
+    45% { transform: scale(1.05); }
+    60% { transform: scale(1.14); filter: drop-shadow(0 0 20px var(--crimson-bright)); }
+  }
+
+  .status-text-title {
+    font-family: var(--font-heading);
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+  .status-text-title.active {
+    color: #ff3355;
+    text-shadow: 0 0 14px rgba(255, 50, 80, 0.65);
+  }
+  .status-text-title.paused {
+    color: #9aa0aa;
+    text-shadow: none;
+  }
+
+  .status-sub-desc {
+    font-size: 10px;
+    color: #8c8585;
+    margin-top: 2px;
+  }
+
+  /* Blood Rune Master Button */
+  .btn-master-toggle {
+    background: linear-gradient(135deg, rgba(90, 0, 22, 0.9) 0%, rgba(160, 0, 36, 0.98) 100%);
+    border: 1px solid var(--crimson-bright);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(255, 0, 60, 0.4);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-master-toggle::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transform: rotate(45deg) translateY(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .btn-master-toggle:hover::after {
+    transform: rotate(45deg) translateY(100%);
+  }
+
+  .btn-master-toggle:hover {
+    background: linear-gradient(135deg, rgba(130, 0, 30, 0.95) 0%, rgba(220, 0, 50, 1) 100%);
+    box-shadow: 0 0 25px rgba(255, 0, 60, 0.7);
+    transform: translateY(-1px);
+  }
+
+  .btn-master-toggle.paused {
+    background: linear-gradient(135deg, #1f232d 0%, #2f3544 100%);
+    border-color: #555f75;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    color: #b0b8c8;
+  }
+
+  /* -------------------------------------------------------------
+     SECTION 2: VIRTUAL DESKTOPS (DIMENSIONAL CLOAKING)
+     ------------------------------------------------------------- */
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card-inner);
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    margin-bottom: 12px;
+  }
+
+  .switch-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .switch-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #f0eae1;
+    letter-spacing: 0.5px;
+  }
+
+  .switch-sub {
+    font-size: 9px;
+    color: #8c827a;
+  }
+
+  /* Animated Gothic Checkbox */
+  .gothic-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .gothic-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .gothic-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #181420;
+    border: 1px solid var(--gold-dark);
+    border-radius: 12px;
+    transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.95);
+  }
+
+  .gothic-slider::before {
+    content: '';
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background: linear-gradient(135deg, #ff003c, #800018);
+    border-radius: 50%;
+    transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.75);
+  }
+
+  .gothic-toggle input:checked + .gothic-slider {
+    background: #25121e;
+    border-color: var(--crimson-bright);
+  }
+
+  .gothic-toggle input:checked + .gothic-slider::before {
+    transform: translateX(20px);
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold-dark));
+    box-shadow: 0 0 12px var(--gold-bright);
+  }
+
+  /* Desktop Telemetry Line */
+  .desk-status-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 7px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    border-left: 3px solid var(--gold-main);
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 12px;
+    color: var(--gold-bright);
+  }
+
+  .btn-group-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .gothic-btn {
+    background: linear-gradient(180deg, #1f1b26 0%, #110e17 100%);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    color: #e2dcd0;
+    font-family: var(--font-heading);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 7px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.8);
+  }
+
+  .gothic-btn:hover {
+    border-color: var(--gold-bright);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .gothic-btn.active-target {
+    background: linear-gradient(180deg, #3d0e1d 0%, #200810 100%);
+    border-color: var(--crimson-bright);
+    color: #ff99aa;
+    box-shadow: 0 0 14px rgba(255, 0, 60, 0.45);
+  }
+
+  .gothic-btn:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    border-color: #383838;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* -------------------------------------------------------------
+     SECTION 3: OPTICAL SENSOR & MANUAL COORDINATES
+     ------------------------------------------------------------- */
+  .optical-panel {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: center;
+    background: var(--bg-card-inner);
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    margin-bottom: 12px;
+  }
+
+  .swatch-wrapper {
+    position: relative;
+    width: 66px;
+    height: 66px;
+  }
+
+  .swatch-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgb(216, 179, 83);
+    border: 2px solid var(--gold-main);
+    box-shadow: 
+      0 0 18px rgba(212, 175, 55, 0.5),
+      inset 0 0 12px rgba(0, 0, 0, 0.7);
+    transition: background-color 0.15s, box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .swatch-ornament {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 1px dashed rgba(212, 175, 55, 0.45);
+    border-radius: 50%;
+    animation: rotateSeal 22s infinite linear reverse;
+    pointer-events: none;
+  }
+
+  .optical-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .trigger-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid #555;
+    width: fit-content;
+    transition: all 0.25s ease;
+  }
+
+  .trigger-status-badge.idle {
+    color: #8c92a4;
+    border-color: #404555;
+  }
+  .trigger-status-badge.tank {
+    color: #00d9ff;
+    border-color: #00d9ff;
+    box-shadow: 0 0 14px rgba(0, 217, 255, 0.5);
+    animation: rolePulse 1.2s infinite alternate;
+  }
+  .trigger-status-badge.heal {
+    color: #00ff66;
+    border-color: #00ff66;
+    box-shadow: 0 0 14px rgba(0, 255, 102, 0.5);
+    animation: rolePulse 1.2s infinite alternate;
+  }
+  .trigger-status-badge.dps {
+    color: #ff8800;
+    border-color: #ff8800;
+    box-shadow: 0 0 14px rgba(255, 136, 0, 0.5);
+    animation: rolePulse 1.2s infinite alternate;
+  }
+  .trigger-status-badge.decline {
+    color: #ffea00;
+    border-color: #ffea00;
+    box-shadow: 0 0 14px rgba(255, 234, 0, 0.5);
+  }
+  .trigger-status-badge.full {
+    color: #ff00ff;
+    border-color: #ff00ff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.75);
+    animation: pulseFull 0.9s infinite alternate;
+  }
+
+  @keyframes rolePulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.04); }
+  }
+
+  @keyframes pulseFull {
+    from { transform: scale(1); filter: drop-shadow(0 0 10px #ff00ff); }
+    to { transform: scale(1.08); filter: drop-shadow(0 0 22px #ff00ff); }
+  }
+
+  .rgb-numeric-line {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--silver-glow);
+  }
+
+  /* Manual Coordinates Row */
+  .coords-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .coord-input-wrap {
+    display: flex;
+    align-items: center;
+    background: #0d0a12;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    gap: 4px;
+    width: 74px;
+    transition: border-color 0.2s ease;
+  }
+  .coord-input-wrap:focus-within {
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+  }
+
+  .coord-input-wrap span {
+    color: var(--gold-bright);
+    font-weight: 700;
+  }
+
+  .coord-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    outline: none;
+  }
+
+  .btn-action-small {
+    background: #1e1925;
+    border: 1px solid var(--gold-dark);
+    color: var(--gold-bright);
+    font-family: var(--font-heading);
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-grow: 1;
+    text-align: center;
+  }
+  .btn-action-small:hover {
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    transform: translateY(-1px);
+  }
+  .btn-action-small.f11-highlight {
+    background: linear-gradient(135deg, #421424, #1f0810);
+    border-color: var(--crimson-bright);
+    color: #ff99aa;
+  }
+  .btn-action-small.f11-highlight:hover {
+    box-shadow: 0 0 14px var(--crimson-bright);
+    color: #fff;
+  }
+
+  /* -------------------------------------------------------------
+     SECTION 4: CHRONICLE & TELEMETRY
+     ------------------------------------------------------------- */
+  .telemetry-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .counter-box {
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 6px;
+    padding: 8px 14px;
+    text-align: center;
+    min-width: 90px;
+  }
+
+  .counter-num {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold-bright);
+    text-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+  .counter-num.bump {
+    transform: scale(1.35);
+    color: #ff003c;
+    text-shadow: 0 0 20px #ff003c;
+  }
+
+  .counter-label {
+    font-size: 8.5px;
+    color: #8c827a;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .log-feed-box {
+    background: #08060c;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 4px;
+    padding: 8px 12px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: #00ff88;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.95);
+    position: relative;
+  }
+
+  .log-feed-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+  }
+
+  /* -------------------------------------------------------------
+     FOOTER CONTROLS
+     ------------------------------------------------------------- */
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 4px;
+  }
+
+  .autorun-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: #9c958e;
+    cursor: pointer;
+  }
+
+  .footer-btns {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-subtle {
+    background: #14121a;
+    border: 1px solid #3d3846;
+    color: #a09aa6;
+    font-size: 10px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    transition: all 0.2s;
+  }
+  .btn-subtle:hover {
+    color: #fff;
+    border-color: #776e88;
+  }
+
+  .btn-exit {
+    background: #2a0e14;
+    border-color: #661a24;
+    color: #ff8888;
+  }
+  .btn-exit:hover {
+    background: #44121c;
+    border-color: var(--crimson-bright);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 0, 60, 0.6);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+<div class="vignette-overlay"></div>
+
+<div class="app-container">
+  
+  <!-- HEADER & CROMWELL SEAL -->
+  <div class="header-card">
+    <div class="seal-wrapper">
+      <div class="seal-glow-pulse"></div>
+      <svg class="seal-svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#d4af37" stroke-width="1.8" stroke-dasharray="4,2"/>
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#c41e3a" stroke-width="1.2"/>
+        <!-- 5-Point Pentagram -->
+        <polygon points="50,14 61,38 86,38 66,54 74,78 50,62 26,78 34,54 14,38 39,38" fill="rgba(196, 30, 58, 0.25)" stroke="#d4af37" stroke-width="1.4"/>
+        <circle cx="50" cy="50" r="16" fill="none" stroke="#f9e29b" stroke-width="1"/>
+        <!-- Center Eye / Cromwell Rune -->
+        <circle cx="50" cy="50" r="5" fill="#ff003c"/>
+      </svg>
+    </div>
+    <div class="header-info">
+      <div class="header-title">HELLSING M+ RECRUITER</div>
+      <div class="header-sub">Royal Order of Religious Knights • Auto-Tactical</div>
+      <div class="header-hotkeys">
+        <span class="pill-key">NumPad 4: Столы</span>
+        <span class="pill-key">NumPad 5: Меню</span>
+        <span class="pill-key">NumPad 1: Пауза</span>
+        <span class="pill-key">F11: Сенсор</span>
+      </div>
+    </div>
+    <div class="sound-btn" id="btn-sound-toggle" title="Звуковые эффекты">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SECTION 1: MASTER STATUS -->
+  <div class="hellsing-card">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.5L20.5 19h-17L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+      Боевое Состояние Службы
+    </div>
+    <div class="status-grid">
+      <div class="status-main-box">
+        <div class="vampire-heart" id="vampire-heart"></div>
+        <div>
+          <div class="status-text-title active" id="status-title">АВТО-НАБОР ВКЛЮЧЕН</div>
+          <div class="status-sub-desc" id="status-desc">Служба отслеживает роли и принимает F12</div>
+        </div>
+      </div>
+      <button class="btn-master-toggle" id="btn-toggle-active">
+        <span id="btn-toggle-text">Пауза (NumPad 1)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION 2: VIRTUAL DESKTOPS -->
+  <div class="hellsing-card">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+      Пространственная Изоляция (Виртуальные Столы)
+    </div>
+    
+    <div class="switch-row">
+      <div class="switch-desc">
+        <span class="switch-title">Работать на 1 основном столе</span>
+        <span class="switch-sub">Отключить доп. стол, авто-перенос WoW сюда</span>
+      </div>
+      <label class="gothic-toggle">
+        <input type="checkbox" id="chk-single-desktop">
+        <span class="gothic-slider"></span>
+      </label>
+    </div>
+
+    <div class="desk-status-badge" id="desk-status-badge">
+      <span id="desk-info-text">Текущий стол: #1 | Стол WoW: #2 | Столов: 2</span>
+      <span id="desk-mode-tag" style="color: #00ff88;">ИЗОЛЯЦИЯ</span>
+    </div>
+
+    <div class="btn-group-row">
+      <button class="gothic-btn" id="btn-desk-toggle">Стол WoW &lt;-&gt; Осн</button>
+      <button class="gothic-btn active-target" id="btn-go-wow">В WoW (Стол #2)</button>
+      <button class="gothic-btn" id="btn-go-back">Назад (Стол #1)</button>
+    </div>
+  </div>
+
+  <!-- SECTION 3: OPTICAL SENSOR & CALIBRATION -->
+  <div class="hellsing-card">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      Оптический Сенсор (DirectX / F11)
+    </div>
+
+    <div class="optical-panel">
+      <div class="swatch-wrapper">
+        <div class="swatch-ornament"></div>
+        <div class="swatch-circle" id="pixel-swatch"></div>
+      </div>
+      <div class="optical-details">
+        <div class="trigger-status-badge idle" id="trigger-badge">
+          <span id="trigger-badge-dot">●</span>
+          <span id="trigger-badge-text">РЕЖИМ ОЖИДАНИЯ (IDLE)</span>
+        </div>
+        <div class="rgb-numeric-line" id="rgb-coords-line">
+          Клиент WoW: X=17, Y=19 | RGB(0, 0, 0)
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-top: 10px;">
+      <button class="btn-action-small f11-highlight" id="btn-opencv-scan" style="flex: 1; background: linear-gradient(135deg, rgba(160, 20, 180, 0.45), rgba(40, 10, 50, 0.7)); border: 1px solid #d918e3; color: #ff99ff; font-weight: 700; text-shadow: 0 0 6px #d918e3;">
+        🔍 100% OpenCV Авто-поиск (F11)
+      </button>
+      <button class="btn-action-small" id="btn-reset-coords" style="max-width: 90px;">↺ (20, 20)</button>
+    </div>
+    <div class="coords-row" style="margin-top: 6px;">
+      <div class="coord-input-wrap">
+        <span>X:</span>
+        <input type="number" class="coord-input" id="inp-coord-x" value="20">
+      </div>
+      <div class="coord-input-wrap">
+        <span>Y:</span>
+        <input type="number" class="coord-input" id="inp-coord-y" value="20">
+      </div>
+      <button class="btn-action-small" id="btn-save-coords">💾 Сохранить</button>
+      <div id="opencv-badge" style="font-size: 10px; color: #00ffaa; align-self: center; margin-left: 8px; letter-spacing: 0.5px; text-shadow: 0 0 5px #00ffaa;"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: TELEMETRY & EVENT LOG -->
+  <div class="hellsing-card">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+      Телеметрия и Хроника Подбора
+    </div>
+    <div class="telemetry-grid">
+      <div class="counter-box">
+        <div class="counter-num" id="counter-val">0</div>
+        <div class="counter-label">Принято (F12)</div>
+      </div>
+      <div class="log-feed-box" id="log-feed">
+        [--:--:--] Инициализация тактической системы...
+      </div>
+    </div>
+    <div style="display: flex; justify-content: flex-end;">
+      <button class="btn-action-small" id="btn-test-audio" style="max-width: 140px;">
+        🔊 Тест Звука 5/5
+      </button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-row">
+    <label class="autorun-label">
+      <input type="checkbox" id="chk-autorun" checked>
+      <span>Автозагрузка с Windows</span>
+    </label>
+    <div class="footer-btns">
+      <button class="btn-subtle" id="btn-minimize">Свернуть (NumPad 5)</button>
+      <button class="btn-subtle btn-exit" id="btn-exit">Завершить</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- PARTICLE ENGINE & INTERACTIVITY JS -->
+<script>
+  // -------------------------------------------------------------
+  // CANVAS PARTICLES & BLOOD EMBER SIMULATION
+  // -------------------------------------------------------------
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const particles = [];
+  const PARTICLE_COUNT = 45;
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      radius: Math.random() * 2.5 + 0.8,
+      speedY: Math.random() * 0.75 + 0.3,
+      speedX: (Math.random() - 0.5) * 0.45,
+      alpha: Math.random() * 0.7 + 0.2,
+      fadeRate: Math.random() * 0.006 + 0.003,
+      color: Math.random() > 0.35 ? 'rgba(255, 0, 60,' : 'rgba(212, 175, 55,'
+    });
+  }
+
+  function renderParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let p of particles) {
+      p.y -= p.speedY;
+      p.x += p.speedX;
+      p.alpha += p.fadeRate;
+
+      if (p.alpha > 0.88 || p.alpha < 0.12) {
+        p.fadeRate = -p.fadeRate;
+      }
+
+      if (p.y < -10) {
+        p.y = canvas.height + 10;
+        p.x = Math.random() * canvas.width;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = p.color.includes('255') ? '#ff003c' : '#d4af37';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(renderParticles);
+  }
+  renderParticles();
+
+  // -------------------------------------------------------------
+  // AUDIO SYNTHESIZER FOR LUXURY SOUND FX
+  // -------------------------------------------------------------
+  let soundEnabled = true;
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playGothicClick(freq = 440, duration = 0.08) {
+    if (!soundEnabled) return;
+    try {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + duration);
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  document.getElementById('btn-sound-toggle').addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    const btn = document.getElementById('btn-sound-toggle');
+    btn.style.opacity = soundEnabled ? '1' : '0.4';
+    if (soundEnabled) playGothicClick(580, 0.12);
+  });
+
+  // -------------------------------------------------------------
+  // API STATE POLLING & REACTIVITY
+  // -------------------------------------------------------------
+  const API_STATUS = '/api/status';
+  const API_ACTION = '/api/action';
+  let lastPressCount = 0;
+
+  async function postAction(action, payload = {}) {
+    playGothicClick(540, 0.09);
+    try {
+      const res = await fetch(API_ACTION, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...payload })
+      });
+      return await res.json();
+    } catch(e) {
+      console.error('API Error:', e);
+    }
+  }
+
+  async function updateState() {
+    try {
+      const res = await fetch(API_STATUS);
+      if (!res.ok) return;
+      const data = await res.json();
+
+      // 1. Master Active Status
+      const heart = document.getElementById('vampire-heart');
+      const title = document.getElementById('status-title');
+      const desc = document.getElementById('status-desc');
+      const btnToggle = document.getElementById('btn-toggle-active');
+      const btnToggleText = document.getElementById('btn-toggle-text');
+
+      if (data.is_active) {
+        heart.classList.remove('paused');
+        title.className = 'status-text-title active';
+        title.innerText = 'АВТО-НАБОР ВКЛЮЧЕН';
+        desc.innerText = 'Служба отслеживает роли и принимает F12';
+        btnToggle.className = 'btn-master-toggle';
+        btnToggleText.innerText = 'Пауза (NumPad 1)';
+      } else {
+        heart.classList.add('paused');
+        title.className = 'status-text-title paused';
+        title.innerText = 'СЛУЖБА НА ПАУЗЕ';
+        desc.innerText = 'Нажмите NumPad 1 для возобновления';
+        btnToggle.className = 'btn-master-toggle paused';
+        btnToggleText.innerText = 'Включить (NumPad 1)';
+      }
+
+      // 2. Virtual Desktops
+      const chkSingle = document.getElementById('chk-single-desktop');
+      const deskBadge = document.getElementById('desk-info-text');
+      const deskModeTag = document.getElementById('desk-mode-tag');
+      const btnGoBack = document.getElementById('btn-go-back');
+      const btnGoWow = document.getElementById('btn-go-wow');
+
+      chkSingle.checked = !data.use_virtual_desktop;
+      deskBadge.innerText = `Текущий стол: #${data.current_desktop || 1} | Стол WoW: #${data.wow_desktop || 2} | Столов: ${data.desktops_count || 2}`;
+
+      if (data.use_virtual_desktop) {
+        deskModeTag.innerText = 'ИЗОЛЯЦИЯ';
+        deskModeTag.style.color = '#ff0055';
+        btnGoBack.disabled = false;
+        btnGoWow.innerText = 'В WoW (Стол #2)';
+      } else {
+        deskModeTag.innerText = '1 СТОЛ';
+        deskModeTag.style.color = '#00ff88';
+        btnGoBack.disabled = true;
+        btnGoWow.innerText = 'Фокус WoW';
+      }
+
+      // 3. Optical Swatch & Trigger
+      const swatch = document.getElementById('pixel-swatch');
+      const rgbLine = document.getElementById('rgb-coords-line');
+      const trigBadge = document.getElementById('trigger-badge');
+      const trigText = document.getElementById('trigger-badge-text');
+
+      const rgb = data.current_rgb || [0, 0, 0];
+      swatch.style.backgroundColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+      rgbLine.innerText = `Клиент WoW: X=${data.client_x}, Y=${data.client_y} | RGB(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+      // Badge roles
+      trigBadge.className = 'trigger-status-badge';
+      if (data.event_type === 'INVITE') {
+        if (data.role === 'TANK') {
+          trigBadge.classList.add('tank');
+          trigText.innerText = 'ТАНК (Голубой)';
+        } else if (data.role === 'HEAL') {
+          trigBadge.classList.add('heal');
+          trigText.innerText = 'ХИЛ (Неоновый зеленый)';
+        } else if (data.role === 'DPS') {
+          trigBadge.classList.add('dps');
+          trigText.innerText = 'ДД (Оранжевый)';
+        }
+      } else if (data.event_type === 'ACTION' && data.role === 'DECLINE') {
+        trigBadge.classList.add('decline');
+        trigText.innerText = 'ОТКЛОНЕНИЕ (Желтый)';
+      } else if (data.event_type === 'FULL') {
+        trigBadge.classList.add('full');
+        trigText.innerText = 'ГРУППА 5/5 СОБРАНА';
+      } else if (data.event_type === 'TEST') {
+        trigBadge.classList.add('tank');
+        trigText.innerText = 'ТЕСТОВЫЙ ПИКСЕЛЬ (F11)';
+      } else {
+        trigBadge.classList.add('idle');
+        trigText.innerText = 'РЕЖИМ ОЖИДАНИЯ (IDLE)';
+      }
+
+      if (data.opencv_confidence && data.opencv_confidence >= 0.85) {
+        document.getElementById('opencv-badge').innerText = `100% OpenCV (${data.client_x}, ${data.client_y})`;
+      } else {
+        document.getElementById('opencv-badge').innerText = '';
+      }
+      if (document.activeElement !== document.getElementById('inp-coord-x') &&
+          document.activeElement !== document.getElementById('inp-coord-y')) {
+        document.getElementById('inp-coord-x').value = data.client_x || 20;
+        document.getElementById('inp-coord-y').value = data.client_y || 20;
+      }
+
+      // 4. Counter & Chronicle
+      const countEl = document.getElementById('counter-val');
+      const curCount = data.press_count || 0;
+      if (curCount !== lastPressCount) {
+        lastPressCount = curCount;
+        countEl.innerText = curCount;
+        countEl.classList.add('bump');
+        setTimeout(() => countEl.classList.remove('bump'), 300);
+      } else {
+        countEl.innerText = curCount;
+      }
+
+      if (data.last_event_text) {
+        document.getElementById('log-feed').innerText = data.last_event_text;
+      }
+
+      // 5. Autorun
+      document.getElementById('chk-autorun').checked = !!data.autorun;
+
+    } catch(e) {}
+  }
+
+  // Poll state every 180 ms for ultra-smooth live telemetry
+  setInterval(updateState, 180);
+  updateState();
+
+  // -------------------------------------------------------------
+  // BUTTON HANDLERS
+  // -------------------------------------------------------------
+  document.getElementById('btn-toggle-active').addEventListener('click', () => {
+    postAction('toggle_active');
+  });
+
+  document.getElementById('chk-single-desktop').addEventListener('change', () => {
+    postAction('toggle_single_desktop');
+  });
+
+  document.getElementById('btn-desk-toggle').addEventListener('click', () => {
+    postAction('toggle_desktop');
+  });
+
+  document.getElementById('btn-go-wow').addEventListener('click', () => {
+    postAction('switch_to_wow');
+  });
+
+  document.getElementById('btn-go-back').addEventListener('click', () => {
+    postAction('switch_to_return');
+  });
+
+  document.getElementById('btn-save-coords').addEventListener('click', () => {
+    const x = parseInt(document.getElementById('inp-coord-x').value) || 20;
+    const y = parseInt(document.getElementById('inp-coord-y').value) || 20;
+    postAction('set_coords', { x, y });
+  });
+
+  document.getElementById('btn-reset-coords').addEventListener('click', () => {
+    document.getElementById('inp-coord-x').value = 20;
+    document.getElementById('inp-coord-y').value = 20;
+    postAction('reset_coords');
+  });
+
+  document.getElementById('btn-opencv-scan').addEventListener('click', () => {
+    postAction('scan_opencv');
+  });
+
+  document.getElementById('btn-test-audio').addEventListener('click', () => {
+    postAction('test_audio');
+  });
+
+  document.getElementById('chk-autorun').addEventListener('change', (e) => {
+    postAction('toggle_autorun', { enabled: e.target.checked });
+  });
+
+  document.getElementById('btn-minimize').addEventListener('click', () => {
+    postAction('minimize');
+  });
+
+  document.getElementById('btn-exit').addEventListener('click', () => {
+    if (confirm('Завершить службу WoW Smart Recruiter?')) {
+      postAction('exit');
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+## Interface: 120007
+## Title: |cffff3333KAR|r |cffffffffP2P Heuristic Tester|r
+## Notes: Автономный модуль тестирования и эвристики сопряжения клиентов (P2P Handshake & Telemetry)
+## Author: Hellsing / Antigravity
+## Version: 2.2
+## SavedVariables: KAR_P2P_TesterDB
+KAR_P2P_Tester.lua

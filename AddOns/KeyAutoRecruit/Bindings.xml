@@ -1,0 +1,14 @@
+<Bindings>
+	<Binding name="KAR_RECENT_GROUPS" category="BINDING_HEADER_KEYAUTORECRUIT">
+		KAR_ToggleRecentGroups()
+	</Binding>
+	<Binding name="KAR_BLACKLIST" category="BINDING_HEADER_KEYAUTORECRUIT">
+		KAR_ToggleBlacklist()
+	</Binding>
+	<Binding name="KAR_SETTINGS" category="BINDING_HEADER_KEYAUTORECRUIT">
+		KAR_ToggleSettings()
+	</Binding>
+	<Binding name="KAR_PASTE_SYNC" category="BINDING_HEADER_KEYAUTORECRUIT">
+		KAR_TogglePaste()
+	</Binding>
+</Bindings>

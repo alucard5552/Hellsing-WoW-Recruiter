@@ -1,0 +1,15 @@
+# Core Computer Vision & Image Processing
+opencv-python>=4.8.0
+pillow>=10.0.0
+numpy>=1.24.0
+
+# Windows Win32 API & System Automation
+pywin32>=306
+pyvda>=0.4.0
+psutil>=5.9.0
+
+# Desktop Web GUI & Automation
+pywebview>=4.4.0
+
+# Build & Compilation Tools
+pyinstaller>=6.3.0

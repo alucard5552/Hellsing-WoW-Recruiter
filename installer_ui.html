@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HELLSING • WoW Mythic+ Smart Recruiter Installer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+  :root {
+    --bg-void: #060509;
+    --bg-card: rgba(14, 10, 18, 0.90);
+    --bg-card-inner: rgba(22, 14, 28, 0.85);
+    --crimson-blood: #c41e3a;
+    --crimson-bright: #ff003c;
+    --crimson-neon: #ff1a53;
+    --crimson-dark: #4a0011;
+    --gold-bright: #fcf6ba;
+    --gold-main: #d4af37;
+    --gold-dark: #8a6c1e;
+    --text-main: #f0e6e6;
+    --text-muted: #9c8e9b;
+    --font-gothic: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+    --font-heading: 'Cinzel', Georgia, serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body {
+    background-color: var(--bg-void);
+    color: var(--text-main);
+    font-family: var(--font-ui);
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    box-shadow: inset 0 0 80px rgba(196, 30, 58, 0.25), 0 0 40px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Animated Canvas Background */
+  #particles-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.65;
+  }
+
+  /* App Layout Container */
+  .app-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 0;
+  }
+
+  /* Title Bar (Draggable) */
+  .title-bar {
+    height: 42px;
+    background: linear-gradient(180deg, rgba(28, 12, 22, 0.95), rgba(12, 6, 15, 0.90));
+    border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    cursor: move;
+  }
+
+  .pywebview-drag-region {
+    -webkit-app-region: drag;
+  }
+
+  .title-bar-drag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    -webkit-app-region: drag;
+  }
+
+  .title-seal-mini {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--crimson-bright);
+    animation: rotateSeal 12s linear infinite;
+  }
+
+  .title-text {
+    font-family: var(--font-gothic);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--gold-bright);
+    text-shadow: 0 0 10px rgba(255, 0, 60, 0.6);
+  }
+
+  .title-controls {
+    display: flex;
+    gap: 8px;
+    cursor: default;
+    -webkit-app-region: no-drag;
+  }
+
+  .title-controls button {
+    -webkit-app-region: no-drag;
+  }
+
+  .win-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 10, 24, 0.6);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .win-btn:hover {
+    background: rgba(255, 0, 60, 0.3);
+    color: #ffffff;
+    border-color: var(--crimson-bright);
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+  }
+
+  .win-btn.close:hover {
+    background: var(--crimson-bright);
+    color: #ffffff;
+  }
+
+  /* Header Section */
+  .header-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: linear-gradient(90deg, rgba(30, 8, 16, 0.7), rgba(10, 5, 12, 0.5), rgba(30, 8, 16, 0.7));
+    border-bottom: 1px solid rgba(255, 0, 60, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--crimson-bright), var(--gold-main), transparent);
+    animation: scanline 4s linear infinite;
+  }
+
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .seal-container {
+    width: 58px;
+    height: 58px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .seal-svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 60, 0.85));
+  }
+
+  svg.seal-svg {
+    animation: rotateSeal 20s linear infinite;
+  }
+
+  .brand-info h1 {
+    font-family: var(--font-gothic);
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-shadow: 0 0 12px rgba(255, 0, 60, 0.8), 0 0 24px rgba(196, 30, 58, 0.4);
+  }
+
+  .brand-info p {
+    font-size: 11px;
+    color: var(--gold-main);
+    letter-spacing: 1.2px;
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  .version-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    background: rgba(196, 30, 58, 0.2);
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    border-radius: 4px;
+    color: var(--crimson-bright);
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.2);
+  }
+
+  /* Main Scrollable Content */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .main-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  .main-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 0, 60, 0.4);
+    border-radius: 3px;
+  }
+
+  /* Gothic Card */
+  .gothic-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 0, 60, 0.25);
+    border-radius: 6px;
+    padding: 14px 16px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    transition: border-color 0.3s ease;
+  }
+
+  .gothic-card:hover {
+    border-color: rgba(255, 0, 60, 0.5);
+  }
+
+  .card-title {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--gold-bright);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .card-title .icon-glyph {
+    color: var(--crimson-bright);
+  }
+
+  /* Directory Selector */
+  .dir-input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .dir-input {
+    flex: 1;
+    background: rgba(8, 4, 10, 0.85);
+    border: 1px solid rgba(255, 0, 60, 0.3);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  .dir-input:focus {
+    border-color: var(--crimson-bright);
+    box-shadow: 0 0 12px rgba(255, 0, 60, 0.4);
+  }
+
+  .btn-browse {
+    padding: 0 18px;
+    background: linear-gradient(180deg, rgba(40, 10, 20, 0.9), rgba(15, 5, 10, 0.9));
+    border: 1px solid var(--crimson-bright);
+    border-radius: 4px;
+    color: var(--gold-bright);
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.3);
+  }
+
+  .btn-browse:hover {
+    background: linear-gradient(180deg, var(--crimson-blood), var(--crimson-dark));
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(255, 0, 60, 0.7);
+    transform: translateY(-1px);
+  }
+
+  /* Analysis Pills */
+  .analysis-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    background: rgba(10, 6, 12, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pill.valid {
+    border-color: rgba(0, 255, 127, 0.4);
+    color: #00ff7f;
+    background: rgba(0, 255, 127, 0.08);
+  }
+
+  .pill.warning {
+    border-color: rgba(255, 204, 0, 0.4);
+    color: #ffcc00;
+    background: rgba(255, 204, 0, 0.08);
+  }
+
+  /* Options Component List */
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card-inner);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .option-item:hover {
+    border-color: rgba(255, 0, 60, 0.4);
+    background: rgba(30, 15, 36, 0.9);
+  }
+
+  .option-label-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .option-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .option-badge-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    color: var(--gold-bright);
+    letter-spacing: 0.5px;
+  }
+
+  .option-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Custom Toggle Switch */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(20, 10, 24, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: .3s;
+    border-radius: 20px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #8c828e;
+    transition: .3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: rgba(196, 30, 58, 0.6);
+    border-color: var(--crimson-bright);
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(18px);
+    background-color: #ffffff;
+    box-shadow: 0 0 8px #ffffff;
+  }
+
+  /* Progress Section (Extraction) */
+  .progress-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .progress-percent {
+    font-family: var(--font-mono);
+    color: var(--crimson-bright);
+    font-weight: 700;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 14px;
+    background: rgba(8, 4, 10, 0.95);
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+  }
+
+  .progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--crimson-dark), var(--crimson-blood), var(--crimson-bright));
+    border-radius: 7px;
+    position: relative;
+    transition: width 0.15s ease-out;
+    box-shadow: 0 0 16px rgba(255, 0, 60, 0.8);
+  }
+
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: barShine 1.5s infinite;
+  }
+
+  .progress-status-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #cfc2ce;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Extraction Terminal Log */
+  .terminal-box {
+    background: rgba(5, 3, 7, 0.95);
+    border: 1px solid rgba(255, 0, 60, 0.25);
+    border-radius: 4px;
+    height: 110px;
+    overflow-y: auto;
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9);
+  }
+
+  .terminal-box::-webkit-scrollbar {
+    width: 4px;
+  }
+  .terminal-box::-webkit-scrollbar-thumb {
+    background: var(--crimson-dark);
+  }
+
+  .log-line {
+    color: #a49ca8;
+    word-break: break-all;
+  }
+
+  .log-line.info { color: #00ccff; }
+  .log-line.ok { color: #00ff7f; }
+  .log-line.warn { color: #ffcc00; }
+  .log-line.error { color: #ff3333; }
+
+  /* Footer Action Bar */
+  .footer-action-bar {
+    padding: 14px 24px;
+    background: linear-gradient(180deg, rgba(14, 6, 18, 0.95), rgba(8, 4, 10, 0.98));
+    border-top: 1px solid rgba(255, 0, 60, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .footer-stats {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .footer-stats span {
+    color: var(--gold-bright);
+    font-weight: 600;
+  }
+
+  .action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .btn-uninstall {
+    padding: 12px 20px;
+    background: linear-gradient(180deg, #3d0c18, #20050c);
+    border: 1px solid #c41e3a;
+    border-radius: 6px;
+    color: #ff4d6d;
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-shadow: 0 0 8px rgba(255, 0, 60, 0.6);
+    box-shadow: 0 0 15px rgba(196, 30, 58, 0.25);
+    white-space: nowrap;
+  }
+
+  .btn-uninstall:hover {
+    background: linear-gradient(180deg, #6b0c22, #380714);
+    border-color: #ff003c;
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 0, 60, 0.6);
+    transform: translateY(-2px);
+  }
+
+  .btn-uninstall:active {
+    transform: translateY(1px);
+  }
+
+  .btn-uninstall:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-install {
+    flex: 1;
+    max-width: 360px;
+    padding: 12px 24px;
+    background: linear-gradient(180deg, #d4143a, #85001a);
+    border: 1px solid #ff2a55;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: var(--font-gothic);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 60, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-install:hover {
+    background: linear-gradient(180deg, #ff1a48, #b80026);
+    box-shadow: 0 0 30px rgba(255, 0, 60, 0.9), inset 0 0 16px rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .btn-install:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.6);
+  }
+
+  .btn-install:disabled {
+    background: #2a1520;
+    border-color: #4a2530;
+    color: #6a5560;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* Animations */
+  @keyframes rotateSeal {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes scanline {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes barShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="app-container">
+  <!-- Title Bar -->
+  <div class="title-bar pywebview-drag-region" id="titleBar">
+    <div class="title-bar-drag">
+      <svg class="title-seal-mini" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#ff003c" stroke-width="3"/>
+        <polygon points="50,15 61,78 20,38 80,38 39,78" fill="none" stroke="#d4af37" stroke-width="2"/>
+      </svg>
+      <span class="title-text">HELLSING • TACTICAL RECRUITER SUITE</span>
+    </div>
+    <div class="title-controls">
+      <button class="win-btn" onclick="apiCall('minimize')">—</button>
+      <button class="win-btn close" onclick="apiCall('close')">✕</button>
+    </div>
+  </div>
+
+  <!-- Header Banner -->
+  <div class="header-banner">
+    <div class="brand-group">
+      <div class="seal-container">
+        <img src="alucard_animated_seal.gif" class="seal-svg" alt="Hellsing Cromwell Seal" onerror="this.style.display='none'; document.getElementById('svgSealFallback').style.display='block';">
+        <svg id="svgSealFallback" class="seal-svg" viewBox="0 0 200 200" style="display:none;">
+          <circle cx="100" cy="100" r="92" fill="#0c060d" stroke="#c41e3a" stroke-width="4"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="6, 4"/>
+          <polygon points="100,20 124,160 38,72 162,72 76,160" fill="none" stroke="#ff003c" stroke-width="3"/>
+          <circle cx="100" cy="100" r="24" fill="#140810" stroke="#fcf6ba" stroke-width="2"/>
+          <line x1="84" y1="100" x2="116" y2="100" stroke="#fcf6ba" stroke-width="2"/>
+          <line x1="100" y1="84" x2="100" y2="116" stroke="#fcf6ba" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="brand-info">
+        <h1>HELLSING ALUCARD</h1>
+        <p>WoW Midnight 12.0.7 Tactical Recruiter & Automation</p>
+      </div>
+    </div>
+    <div class="version-tag" id="statusBadge">MIDNIGHT 12.0.7 READY</div>
+  </div>
+
+  <!-- Main Scrollable Content -->
+  <div class="main-content">
+    
+    <!-- 1. Folder Selector Card -->
+    <div class="gothic-card">
+      <div class="card-title">
+        <span class="icon-glyph">📁</span> Папка с игрой World of Warcraft (Сервер Firestorm 12.0.7)
+      </div>
+      <div class="dir-input-row">
+        <input type="text" id="wowDirInput" class="dir-input" value="C:\Firestorm\The War Within\_midnight_" placeholder="C:\Firestorm\The War Within\_midnight_">
+        <button class="btn-browse" onclick="browseFolder()">ОБЗОР...</button>
+      </div>
+      <div class="analysis-pills" id="analysisPills">
+        <div class="pill valid" id="pillExe"><span>🎮</span> <span id="txtExe">WoW 12.0.7 - Firestorm.exe</span></div>
+        <div class="pill valid" id="pillAddons"><span>📂</span> <span id="txtAddons">AddOns OK</span></div>
+        <div class="pill valid" id="pillLog"><span>📝</span> <span id="txtLog">Чат-лог OK</span></div>
+        <div class="pill valid" id="pillWtf"><span>⚙️</span> <span id="txtWtf">Config.wtf OK</span></div>
+      </div>
+    </div>
+
+    <!-- 2. Installation Options Card -->
+    <div class="gothic-card">
+      <div class="card-title">
+        <span class="icon-glyph">⚙️</span> Компоненты установки и пакеты аддонов
+      </div>
+      <div class="options-grid">
+        
+        <!-- Toggle 1: Custom Recruiter Suite -->
+        <label class="option-item">
+          <div class="option-label-group">
+            <span class="option-name">
+              Основной комплекс набора (KeyAutoRecruit + P2P Mesh)
+              <span class="option-badge-tag">HELLSING PRO</span>
+            </span>
+            <span class="option-desc">KeyAutoRecruit Alucard, KAR_P2P_Tester, KeyGroupDumper</span>
+          </div>
+          <div class="switch">
+            <input type="checkbox" id="chkRecruiter" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+
+        <!-- Toggle 2: Daemon Service -->
+        <label class="option-item">
+          <div class="option-label-group">
+            <span class="option-name">Фоновый демон службы (WoWSmartRecruiter)</span>
+            <span class="option-desc">Установка в Program Files, аппаратная эмуляция и изоляция на Virtual Desktop #2</span>
+          </div>
+          <div class="switch">
+            <input type="checkbox" id="chkService" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+
+        <!-- Toggle 4: ChatLog in WTF -->
+        <label class="option-item">
+          <div class="option-label-group">
+            <span class="option-name">Активация чтения логов чата (SET chatLog "1")</span>
+            <span class="option-desc">Автоматическая запись параметра в Config.wtf для мгновенного чтения откликов</span>
+          </div>
+          <div class="switch">
+            <input type="checkbox" id="chkWtf" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+
+        <!-- Toggle 5: Windows Autostart -->
+        <label class="option-item">
+          <div class="option-label-group">
+            <span class="option-name">Автозагрузка при старте Windows</span>
+            <span class="option-desc">Запуск службы в тихом режиме вместе с загрузкой системы</span>
+          </div>
+          <div class="switch">
+            <input type="checkbox" id="chkAutostart" checked>
+            <span class="slider"></span>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- 3. Extraction Progress Card -->
+    <div class="gothic-card progress-section">
+      <div class="card-title">
+        <span class="icon-glyph">🩸</span> Распаковка и интеграция в клиент
+      </div>
+      <div class="progress-header">
+        <span class="progress-status-text" id="statusText">Ожидание команды запуска...</span>
+        <span class="progress-percent" id="percentText">0%</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="terminal-box" id="terminalBox">
+        <div class="log-line info">[ИНИЦИАЛИЗАЦИЯ] Установщик Hellsing Tactical Recruiter готов к работе.</div>
+        <div class="log-line">[СИСТЕМА] Edge Chromium WebView2 60 FPS движок активирован.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Action Bar -->
+  <div class="footer-action-bar">
+    <div class="footer-stats">
+      Целевой клиент: <span id="clientType">WoW Midnight 12.0.7</span><br>
+      Архитектура: <span>Virtual Desktop & Zero-Taint P2P</span>
+    </div>
+    <div class="action-buttons-group">
+      <button class="btn-uninstall" id="btnUninstall" onclick="startUninstall()" style="display: none;">
+        🗑️ УДАЛИТЬ КОМПЛЕКС
+      </button>
+      <button class="btn-install" id="btnInstall" onclick="startInstall()">
+        🩸 УСТАНОВИТЬ ВСЁ В 1 КЛИК
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. Particle Canvas Simulation (Blood Embers & Sparks)
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Ember {
+    constructor() {
+      this.reset(true);
+    }
+    reset(initial = false) {
+      this.x = Math.random() * canvas.width;
+      this.y = initial ? Math.random() * canvas.height : canvas.height + 10;
+      this.size = Math.random() * 2.5 + 0.8;
+      this.speedY = Math.random() * 0.8 + 0.3;
+      this.speedX = (Math.random() - 0.5) * 0.4;
+      this.alpha = Math.random() * 0.7 + 0.2;
+      this.color = Math.random() > 0.3 ? '255, 0, 60' : '212, 175, 55';
+    }
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX;
+      if (this.y < -10) this.reset();
+    }
+    draw() {
+      ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 45; i++) {
+    particles.push(new Ember());
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let p of particles) {
+      p.update();
+      p.draw();
+    }
+    requestAnimationFrame(animateParticles);
+  }
+  animateParticles();
+
+  // 2. Audio Effects (Web Audio API Synthesizer)
+  let audioCtx = null;
+  function playChime(freq = 440, type = 'sine', duration = 0.15) {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  // 3. Terminal Logger
+  function logToTerminal(text, type = 'normal') {
+    const box = document.getElementById('terminalBox');
+    const line = document.createElement('div');
+    line.className = 'log-line ' + type;
+    line.innerText = text;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  // 4. API Bridge Functions
+  function apiCall(action, data = null) {
+    playChime(600, 'triangle', 0.08);
+    if (window.pywebview && window.pywebview.api) {
+      if (action === 'close') window.pywebview.api.close();
+      if (action === 'minimize') window.pywebview.api.minimize();
+    }
+  }
+
+  function browseFolder() {
+    playChime(500, 'sine', 0.1);
+    if (window.pywebview && window.pywebview.api) {
+      window.pywebview.api.browse_folder().then(res => {
+        if (res) updatePathData(res);
+      });
+    }
+  }
+
+  function updatePathData(info) {
+    if (!info) return;
+    document.getElementById('wowDirInput').value = info.root_dir || '';
+    
+    // Check installation status in registry
+    if (info.installed_status && info.installed_status.is_installed) {
+      const uninstBtn = document.getElementById('btnUninstall');
+      if (uninstBtn) uninstBtn.style.display = 'inline-block';
+      const statusBadge = document.getElementById('statusBadge');
+      if (statusBadge) {
+        statusBadge.innerText = '✓ УСТАНОВЛЕНО v' + (info.installed_status.version || '12.0.7');
+        statusBadge.style.borderColor = '#00ff7f';
+        statusBadge.style.color = '#00ff7f';
+      }
+    }
+
+    // Exe pill
+    const txtExe = document.getElementById('txtExe');
+    if (info.exe_path) {
+      txtExe.innerText = info.exe_name || 'WoW.exe';
+      document.getElementById('pillExe').className = 'pill valid';
+    } else {
+      txtExe.innerText = 'Exe не найден';
+      document.getElementById('pillExe').className = 'pill warning';
+    }
+
+    // Addons pill
+    const txtAddons = document.getElementById('txtAddons');
+    txtAddons.innerText = info.addons_dir ? 'AddOns OK' : 'AddOns нет';
+    document.getElementById('pillAddons').className = info.addons_dir ? 'pill valid' : 'pill warning';
+
+    // Log pill
+    const txtLog = document.getElementById('txtLog');
+    txtLog.innerText = info.log_path ? 'Чат-лог OK' : 'Чат-лог нет';
+    document.getElementById('pillLog').className = info.log_path ? 'pill valid' : 'pill warning';
+
+    // WTF pill
+    const txtWtf = document.getElementById('txtWtf');
+    txtWtf.innerText = info.config_wtf ? 'Config.wtf OK' : 'Config.wtf будет создан';
+    document.getElementById('pillWtf').className = info.config_wtf ? 'pill valid' : 'pill warning';
+  }
+
+  function startInstall() {
+    const btn = document.getElementById('btnInstall');
+    btn.disabled = true;
+    btn.innerText = '🩸 УСТАНОВКА В ПРОЦЕССЕ...';
+    playChime(350, 'sawtooth', 0.25);
+
+    const opts = {
+      wow_dir: document.getElementById('wowDirInput').value,
+      install_recruiter: document.getElementById('chkRecruiter').checked,
+      install_service: document.getElementById('chkService').checked,
+      enable_wtf: document.getElementById('chkWtf').checked,
+      enable_autostart: document.getElementById('chkAutostart').checked
+    };
+
+    logToTerminal('=========================================', 'info');
+    logToTerminal('[СТАРТ] Запуск процесса распаковки и настройки...', 'info');
+
+    if (window.pywebview && window.pywebview.api) {
+      window.pywebview.api.start_installation(opts);
+    }
+  }
+
+  function startUninstall() {
+    if (!confirm('Вы действительно хотите полностью удалить комплекс аддонов HELLSING (KeyAutoRecruit, KAR_P2P_Tester, KeyGroupDumper) и остановить фоновую службу?')) {
+      return;
+    }
+    const btnInst = document.getElementById('btnInstall');
+    const btnUninst = document.getElementById('btnUninstall');
+    btnInst.disabled = true;
+    btnUninst.disabled = true;
+    btnUninst.innerText = '🗑️ УДАЛЕНИЕ...';
+    playChime(300, 'sawtooth', 0.25);
+
+    logToTerminal('=========================================', 'info');
+    logToTerminal('[СТАРТ] Запуск процесса деинсталляции комплекса HELLSING...', 'info');
+
+    if (window.pywebview && window.pywebview.api) {
+      window.pywebview.api.uninstall_suite();
+    }
+  }
+
+  // Polling / Receiver from Python backend
+  window.onProgressUpdate = function(pct, statusText, currentFile) {
+    const bar = document.getElementById('progressBar');
+    const pText = document.getElementById('percentText');
+    const sText = document.getElementById('statusText');
+
+    bar.style.width = pct + '%';
+    pText.innerText = Math.floor(pct) + '%';
+    if (statusText) sText.innerText = statusText;
+    if (currentFile) sText.innerText = 'Файл: ' + currentFile;
+  };
+
+  window.onLogMessage = function(text, type = 'normal') {
+    logToTerminal(text, type);
+  };
+
+  window.onInstallComplete = function(success, message) {
+    const btn = document.getElementById('btnInstall');
+    btn.disabled = false;
+    if (success) {
+      btn.innerText = '✓ УСТАНОВКА УСПЕШНО ЗАВЕРШЕНА';
+      btn.style.background = 'linear-gradient(180deg, #00c853, #007e33)';
+      btn.style.borderColor = '#00ff7f';
+      playChime(880, 'sine', 0.4);
+      logToTerminal('[ФИНИШ] Все компоненты успешно интегрированы в клиент WoW!', 'ok');
+      const uninstBtn = document.getElementById('btnUninstall');
+      if (uninstBtn) uninstBtn.style.display = 'inline-block';
+      const statusBadge = document.getElementById('statusBadge');
+      if (statusBadge) {
+        statusBadge.innerText = '✓ УСТАНОВЛЕНО v12.0.7';
+        statusBadge.style.borderColor = '#00ff7f';
+        statusBadge.style.color = '#00ff7f';
+      }
+    } else {
+      btn.innerText = '✕ СБОЙ УСТАНОВКИ (ПОВТОРИТЬ)';
+      btn.style.background = 'linear-gradient(180deg, #d50000, #b71c1c)';
+      logToTerminal('[ОШИБКА] ' + message, 'error');
+    }
+  };
+
+  window.onUninstallComplete = function(success, message) {
+    const btnInst = document.getElementById('btnInstall');
+    const btnUninst = document.getElementById('btnUninstall');
+    btnInst.disabled = false;
+    btnUninst.disabled = false;
+    btnUninst.style.display = 'none';
+    btnUninst.innerText = '🗑️ УДАЛИТЬ КОМПЛЕКС';
+    btnInst.innerText = '🩸 УСТАНОВИТЬ ВСЁ В 1 КЛИК';
+    btnInst.style.background = '';
+    btnInst.style.borderColor = '';
+
+    const statusBadge = document.getElementById('statusBadge');
+    if (statusBadge) {
+      statusBadge.innerText = 'MIDNIGHT 12.0.7 READY';
+      statusBadge.style.borderColor = '';
+      statusBadge.style.color = '';
+    }
+    if (success) {
+      playChime(660, 'sine', 0.35);
+      logToTerminal('[ФИНИШ] Комплекс аддонов и служба успешно удалены из системы!', 'ok');
+    } else {
+      logToTerminal('[ОШИБКА УДАЛЕНИЯ] ' + message, 'error');
+    }
+  };
+
+  // Initial load (strictly once, non-blocking)
+  let initialDataRequested = false;
+  function requestInitialData() {
+    if (initialDataRequested) return;
+    if (window.pywebview && window.pywebview.api) {
+      initialDataRequested = true;
+      window.pywebview.api.get_initial_data().then(data => {
+        if (data) updatePathData(data);
+      }).catch(err => {
+        initialDataRequested = false;
+      });
+    }
+  }
+  window.addEventListener('pywebviewready', requestInitialData);
+  setTimeout(requestInitialData, 400);
+</script>
+</body>
+</html>
